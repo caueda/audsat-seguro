@@ -15,10 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-class DriverServiceImplTestIT {
+class ServiceTestIT {
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private CarDriverService carDriverService;
 
     @BeforeEach
     void setUp() {
@@ -33,5 +36,13 @@ class DriverServiceImplTestIT {
         Optional<Driver> optionalDriver = driverService.findByDocument("123.456.789-10");
         assertTrue(optionalDriver.isPresent());
         assertEquals(LocalDate.of(1990,10,5), optionalDriver.get().getBirthDate());
+    }
+
+    @Test
+    void findMainDriver() {
+        var mainCarDriverDocument = "123.456.789-10";
+        var carDriverList = carDriverService.findMainDriver(100L);
+        assert !carDriverList.isEmpty();
+        assertEquals(mainCarDriverDocument, carDriverList.get(0).getDriver().getDocument());
     }
 }
