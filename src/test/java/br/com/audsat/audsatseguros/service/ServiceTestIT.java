@@ -1,5 +1,6 @@
 package br.com.audsat.audsatseguros.service;
 
+import br.com.audsat.audsatseguros.domain.Claim;
 import br.com.audsat.audsatseguros.domain.Driver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +24,9 @@ class ServiceTestIT {
 
     @Autowired
     private CarDriverService carDriverService;
+
+    @Autowired
+    private ClaimService claimService;
 
     @BeforeEach
     void setUp() {
@@ -44,5 +49,21 @@ class ServiceTestIT {
         var carDriverList = carDriverService.findMainDriver(100L);
         assert !carDriverList.isEmpty();
         assertEquals(mainCarDriverDocument, carDriverList.get(0).getDriver().getDocument());
+    }
+
+    @Test
+    void findClaimByDriverId() {
+        var driverIdWithOneClaim = 3L;
+        var driverIdWithNoClaim = 1L;
+        assert claimService.findClaimByDriverId(driverIdWithOneClaim).size() == 1;
+        assert claimService.findClaimByDriverId(driverIdWithNoClaim).size() == 0;
+    }
+
+    @Test
+    void findClaimByCarId() {
+        var carIdWithOneClaim = 110L;
+        var driverIdWithNoClaim = 1L;
+        assert claimService.findClaimByCarId(carIdWithOneClaim).size() == 1;
+        assert claimService.findClaimByCarId(driverIdWithNoClaim).size() == 0;
     }
 }
