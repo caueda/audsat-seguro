@@ -2,6 +2,7 @@ package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Claim;
 import br.com.audsat.audsatseguros.domain.Driver;
+import br.com.audsat.audsatseguros.repository.InsuranceParamsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ class ServiceTestIT {
 
     @Autowired
     private ClaimService claimService;
+
+    @Autowired
+    private InsuranceParamsRepository insuranceParamsRepository;
 
     @BeforeEach
     void setUp() {
@@ -65,5 +69,10 @@ class ServiceTestIT {
         var driverIdWithNoClaim = 1L;
         assert claimService.findClaimByCarId(carIdWithOneClaim).size() == 1;
         assert claimService.findClaimByCarId(driverIdWithNoClaim).size() == 0;
+    }
+
+    @Test
+    void testInsuranceParams() {
+        assert insuranceParamsRepository.findAll().size() == 1;
     }
 }
