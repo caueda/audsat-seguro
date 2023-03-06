@@ -19,7 +19,7 @@ public class Insurance implements Serializable {
     @Column(name="id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="customer_id")
     private Customer customer;
 
@@ -31,7 +31,7 @@ public class Insurance implements Serializable {
     @Column(name="updated_dt")
     private LocalDateTime updatedDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name="car_id")
     private Car car;
 

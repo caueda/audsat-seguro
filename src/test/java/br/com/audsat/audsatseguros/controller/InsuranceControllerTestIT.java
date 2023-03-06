@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,5 +46,19 @@ class InsuranceControllerTestIT {
         assertThat(responseEntity.getBody().getCar().getModel(), equalTo("COROLLA"));
         assertThat(responseEntity.getBody().getCustomer().getName(), equalTo("Charles Xavier"));
         assertThat(responseEntity.getBody().getQuote(), equalTo(8d));
+    }
+
+    @Test
+    void deleteInsuranceById() {
+        String insuranceIdNotExistent = "2";
+        var uri = UriComponentsBuilder.fromUriString(INSURANCE_URI + "/{insuranceId}")
+                .buildAndExpand(insuranceIdNotExistent)
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.DELETE, entity, String.class);
+
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
     }
 }
