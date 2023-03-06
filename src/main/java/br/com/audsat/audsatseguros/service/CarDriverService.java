@@ -2,8 +2,8 @@ package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.CarDriver;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface CarDriverService {
-    List<CarDriver> findMainDriver(Long carId);
+    Optional<CarDriver> findMainDriver(Long carId);
 }

@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Table(name="insurance_params")
 @Entity
 public class InsuranceParams implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -28,4 +29,8 @@ public class InsuranceParams implements Serializable {
 
     @Column(name="aggravating_quote", nullable = false)
     private Double aggravatingQuote;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="status")
+    private Status status;
 }

@@ -19,7 +19,7 @@ public class Insurance implements Serializable {
     @Column(name="id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="customer_id")
     private Customer customer;
 
@@ -31,9 +31,12 @@ public class Insurance implements Serializable {
     @Column(name="updated_dt")
     private LocalDateTime updatedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="car_id")
     private Car car;
+
+    @Column(name="quote")
+    private Double quote;
 
     @Column(name="is_active")
     private boolean active;

@@ -1,8 +1,6 @@
 package br.com.audsat.audsatseguros.service;
 
-import br.com.audsat.audsatseguros.domain.Claim;
 import br.com.audsat.audsatseguros.domain.Driver;
-import br.com.audsat.audsatseguros.repository.InsuranceParamsRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -30,7 +28,7 @@ class ServiceTestIT {
     private ClaimService claimService;
 
     @Autowired
-    private InsuranceParamsRepository insuranceParamsRepository;
+    private InsuranceParamsService insuranceParamsService;
 
     @BeforeEach
     void setUp() {
@@ -50,9 +48,9 @@ class ServiceTestIT {
     @Test
     void findMainDriver() {
         var mainCarDriverDocument = "123.456.789-10";
-        var carDriverList = carDriverService.findMainDriver(100L);
-        assert !carDriverList.isEmpty();
-        assertEquals(mainCarDriverDocument, carDriverList.get(0).getDriver().getDocument());
+        var optionalCarDriver = carDriverService.findMainDriver(100L);
+        assert optionalCarDriver.isPresent();
+        assertEquals(mainCarDriverDocument, optionalCarDriver.get().getDriver().getDocument());
     }
 
     @Test
@@ -73,6 +71,8 @@ class ServiceTestIT {
 
     @Test
     void testInsuranceParams() {
-        assert insuranceParamsRepository.findAll().size() == 1;
+        var optionalInsuranceParams = insuranceParamsService.findByStatusActive();
+        assertTrue(optionalInsuranceParams.isPresent());
+        assertEquals(1, optionalInsuranceParams.get().getId());
     }
 }

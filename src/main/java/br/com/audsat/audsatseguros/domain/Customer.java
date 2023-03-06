@@ -24,7 +24,7 @@ public class Customer implements Serializable {
     @Column(name="name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="driver_id")
     private Driver driver;
 }

@@ -4,7 +4,9 @@ import br.com.audsat.audsatseguros.domain.CarDriver;
 import br.com.audsat.audsatseguros.repository.CarDriverRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CarDriverServiceImpl implements CarDriverService {
@@ -16,7 +18,11 @@ public class CarDriverServiceImpl implements CarDriverService {
     }
 
     @Override
-    public List<CarDriver> findMainDriver(Long carId) {
-        return carDriverRepository.findCarDriverByCarIdAndMainDriverIsTrue(carId);
+    public Optional<CarDriver> findMainDriver(Long carId) {
+        if (carId == null) {
+            return Optional.empty();
+        }
+        return carDriverRepository.findCarDriverByCarIdAndMainDriverIsTrue(carId)
+                .stream().findFirst();
     }
 }
