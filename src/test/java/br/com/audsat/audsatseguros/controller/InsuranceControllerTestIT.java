@@ -1,6 +1,8 @@
 package br.com.audsat.audsatseguros.controller;
 
 import br.com.audsat.audsatseguros.domain.Insurance;
+import br.com.audsat.audsatseguros.dto.InsuranceDTO;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +47,7 @@ class InsuranceControllerTestIT {
         assertThat(responseEntity.getBody().getId(), equalTo(1L));
         assertThat(responseEntity.getBody().getCar().getModel(), equalTo("COROLLA"));
         assertThat(responseEntity.getBody().getCustomer().getName(), equalTo("Charles Xavier"));
-        assertThat(responseEntity.getBody().getQuote(), equalTo(8d));
+        assertThat(responseEntity.getBody().getQuote(), equalTo(0.06));
     }
 
     @Test
@@ -59,6 +61,22 @@ class InsuranceControllerTestIT {
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.DELETE, entity, String.class);
 
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    }
+
+    @Test
+    void testSaveInsurance() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        InsuranceDTO insuranceRequest = InsuranceDTO
+                .builder()
+                .customerId(10L)
+                .carId(100L)
+                .build();
+        HttpEntity<InsuranceDTO> request = new HttpEntity<>(insuranceRequest, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(INSURANCE_URI, request, String.class);
+        var location = response.getHeaders().getLocation().toString();
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+        Assertions.assertTrue(location.contains("/insurance/budget/1"));
     }
 }

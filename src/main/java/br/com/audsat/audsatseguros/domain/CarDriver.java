@@ -2,6 +2,7 @@ package br.com.audsat.audsatseguros.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="car_driver")
+@Builder
 @Entity
 public class CarDriver implements Serializable {
     @Id

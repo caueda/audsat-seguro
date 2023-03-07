@@ -1,6 +1,7 @@
 package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Driver;
+import br.com.audsat.audsatseguros.dto.InsuranceDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -29,6 +31,9 @@ class ServiceTestIT {
 
     @Autowired
     private InsuranceParamsService insuranceParamsService;
+
+    @Autowired
+    private InsuranceService insuranceService;
 
     @BeforeEach
     void setUp() {
@@ -74,5 +79,18 @@ class ServiceTestIT {
         var optionalInsuranceParams = insuranceParamsService.findByStatusActive();
         assertTrue(optionalInsuranceParams.isPresent());
         assertEquals(1, optionalInsuranceParams.get().getId());
+    }
+
+    @Test
+    void saveInsurance() {
+        InsuranceDTO insuranceRequest = InsuranceDTO
+                .builder()
+                .customerId(10L)
+                .carId(100L)
+                .build();
+        var savedInsurance = insuranceService.save(insuranceRequest);
+        assertNotNull(savedInsurance.getId());
+        assertThat(0.06, equalTo(savedInsurance.getQuote()));
+        assertThat(4800.0, equalTo(savedInsurance.getInsuranceValue()));
     }
 }

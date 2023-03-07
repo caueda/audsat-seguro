@@ -25,4 +25,9 @@ public class CarDriverServiceImpl implements CarDriverService {
         return carDriverRepository.findCarDriverByCarIdAndMainDriverIsTrue(carId)
                 .stream().findFirst();
     }
+
+    @Override
+    public CarDriver save(CarDriver carDriver) {
+        return carDriverRepository.save(carDriver);
+    }
 }

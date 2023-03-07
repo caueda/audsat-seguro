@@ -2,6 +2,7 @@ package br.com.audsat.audsatseguros.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class Insurance implements Serializable {
 
@@ -19,7 +21,7 @@ public class Insurance implements Serializable {
     @Column(name="id")
     private Long id;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.REFRESH})
     @JoinColumn(name="customer_id")
     private Customer customer;
 
@@ -31,12 +33,15 @@ public class Insurance implements Serializable {
     @Column(name="updated_dt")
     private LocalDateTime updatedDate;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.REFRESH})
     @JoinColumn(name="car_id")
     private Car car;
 
     @Column(name="quote")
     private Double quote;
+
+    @Column(name="insurance_value")
+    private Double insuranceValue;
 
     @Column(name="is_active")
     private boolean active;

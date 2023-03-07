@@ -1,8 +1,10 @@
 package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Insurance;
+import br.com.audsat.audsatseguros.dto.InsuranceDTO;
 import br.com.audsat.audsatseguros.exception.InsuranceBusinessException;
 import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
+import br.com.audsat.audsatseguros.repository.CarRepository;
 import br.com.audsat.audsatseguros.repository.InsuranceRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -25,55 +27,83 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     private InsuranceParamsService insuranceParamsService;
 
+    private CarRepository carRepository;
+
     public InsuranceServiceImpl(InsuranceRepository insuranceRepository,
                                 DriverService driverService,
                                 CarDriverService carDriverService,
                                 ClaimService claimService,
                                 CustomerService customerService,
-                                InsuranceParamsService insuranceParamsService) {
+                                InsuranceParamsService insuranceParamsService,
+                                CarRepository carRepository) {
         this.insuranceRepository = insuranceRepository;
         this.driverService = driverService;
         this.carDriverService = carDriverService;
         this.claimService = claimService;
         this.customerService = customerService;
         this.insuranceParamsService = insuranceParamsService;
+        this.carRepository = carRepository;
     }
 
-    @Override
-    public Insurance save(@NotNull Insurance insurance) {
-
+    public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
         var insuranceParams = insuranceParamsService
                 .findByStatusActive()
                 .orElseThrow(() -> new InsuranceParamsNotFoundException("No Insurance Params found"));
 
         Double quote = insuranceParams.getQuote();
 
-        var carDriver = carDriverService.findMainDriver(insurance.getCar().getId())
-                .orElseThrow(() -> new InsuranceBusinessException("No main driver found for this car"));
+        var customer = customerService.findById(insuranceDTO.getCustomerId())
+                .orElseThrow(() -> new InsuranceBusinessException("Customer not found in the system."));
 
-        var car = carDriver.getCar();
-        var driver = carDriver.getDriver();
+        var car = carRepository.findById(insuranceDTO.getCarId())
+                .orElseThrow(() -> new InsuranceBusinessException("Car not found in the system."));
+
+        var isMainDriver = carDriverService.findMainDriver(insuranceDTO.getCarId())
+                .map(carDriver -> carDriver.getDriver().getId().equals(customer.getDriver().getId()) && carDriver.isMainDriver())
+                .orElse(false);
 
         var mainDriverAge = driverService
-                .getDriverAgeOnBaseDate(driver, LocalDate.now());
+                .getDriverAgeOnBaseDate(customer.getDriver(), LocalDate.now());
 
-        if(mainDriverAge >= insuranceParams.getInitialAge() && mainDriverAge <= insuranceParams.getEndAge()) {
+        if(mainDriverAge >= insuranceParams.getInitialAge() && mainDriverAge <= insuranceParams.getEndAge() && isMainDriver) {
             quote += insuranceParams.getAggravatingQuote();
         }
 
-        var claimsByCar = claimService.findClaimByCarId(car.getId());
+        var hasClaims = claimService.findClaimByCarId(insuranceDTO.getCarId()).size() > 1;
 
-        if(!claimsByCar.isEmpty()) {
+        if(hasClaims) {
             quote += insuranceParams.getAggravatingQuote();
         }
-        var claimsByDriver = claimService.findClaimByDriverId(driver.getId());
+
+        var claimsByDriver = claimService.findClaimByDriverId(customer.getDriver().getId());
 
         if(!claimsByDriver.isEmpty()) {
             quote += insuranceParams.getAggravatingQuote();
         }
 
         insurance.setQuote(quote);
+        insurance.setInsuranceValue(quote * car.getFipeValue());
+        insurance.setCar(car);
+        insurance.setCustomer(customer);
+        insurance.setActive(insuranceDTO.isActive());
+        return insurance;
+    }
 
+    @Override
+    public Insurance save(@NotNull InsuranceDTO insuranceDTO) {
+
+        var insurance = calculateInsurance(Insurance
+                .builder()
+                .build(), insuranceDTO);
+
+        return insuranceRepository.save(insurance);
+    }
+
+    @Override
+    public Insurance update(Long id, InsuranceDTO insuranceDTO) {
+        var insurance = insuranceRepository.findById(id)
+                .orElseThrow(() -> new InsuranceParamsNotFoundException("No Insurance with id: " + id));
+        calculateInsurance(insurance, insuranceDTO);
         return insuranceRepository.save(insurance);
     }
 
@@ -86,6 +116,5 @@ public class InsuranceServiceImpl implements InsuranceService {
     public Optional<Insurance> findById(Long id) {
         return insuranceRepository.findById(id);
     }
-
 
 }

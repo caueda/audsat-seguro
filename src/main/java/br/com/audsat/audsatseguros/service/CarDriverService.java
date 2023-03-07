@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface CarDriverService {
     Optional<CarDriver> findMainDriver(Long carId);
+
+    CarDriver save(CarDriver carDriver);
 }
