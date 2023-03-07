@@ -18,3 +18,6 @@ Password: password
 
 ### Open API Documentation
 http://localhost:8080/audsat-api/swagger-ui/index.html
+
+### Dicionário de Dados
+Acessar a wiki deste repositório
