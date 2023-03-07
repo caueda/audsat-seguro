@@ -4,7 +4,7 @@ import br.com.audsat.audsatseguros.domain.Insurance;
 import br.com.audsat.audsatseguros.dto.InsuranceDTO;
 import br.com.audsat.audsatseguros.exception.InsuranceBusinessException;
 import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
-import br.com.audsat.audsatseguros.repository.CarRepository;
+import br.com.audsat.audsatseguros.repository.CarService;
 import br.com.audsat.audsatseguros.repository.InsuranceRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     private InsuranceParamsService insuranceParamsService;
 
-    private CarRepository carRepository;
+    private CarService carService;
 
     public InsuranceServiceImpl(InsuranceRepository insuranceRepository,
                                 DriverService driverService,
@@ -35,14 +35,14 @@ public class InsuranceServiceImpl implements InsuranceService {
                                 ClaimService claimService,
                                 CustomerService customerService,
                                 InsuranceParamsService insuranceParamsService,
-                                CarRepository carRepository) {
+                                CarService carService) {
         this.insuranceRepository = insuranceRepository;
         this.driverService = driverService;
         this.carDriverService = carDriverService;
         this.claimService = claimService;
         this.customerService = customerService;
         this.insuranceParamsService = insuranceParamsService;
-        this.carRepository = carRepository;
+        this.carService = carService;
     }
 
     public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
@@ -55,7 +55,7 @@ public class InsuranceServiceImpl implements InsuranceService {
         var customer = customerService.findById(insuranceDTO.getCustomerId())
                 .orElseThrow(() -> new InsuranceBusinessException("Customer not found in the system."));
 
-        var car = carRepository.findById(insuranceDTO.getCarId())
+        var car = carService.findById(insuranceDTO.getCarId())
                 .orElseThrow(() -> new InsuranceBusinessException("Car not found in the system."));
 
         var isMainDriver = carDriverService.findMainDriver(insuranceDTO.getCarId())
@@ -69,9 +69,9 @@ public class InsuranceServiceImpl implements InsuranceService {
             quote += insuranceParams.getAggravatingQuote();
         }
 
-        var hasClaims = claimService.findClaimByCarId(insuranceDTO.getCarId()).size() > 1;
+        var claimsByCar = claimService.findClaimByCarId(insuranceDTO.getCarId());
 
-        if(hasClaims) {
+        if(!claimsByCar.isEmpty()) {
             quote += insuranceParams.getAggravatingQuote();
         }
 
@@ -102,7 +102,7 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Override
     public Insurance update(Long id, InsuranceDTO insuranceDTO) {
         var insurance = insuranceRepository.findById(id)
-                .orElseThrow(() -> new InsuranceParamsNotFoundException("No Insurance with id: " + id));
+                .orElseThrow(() -> new InsuranceBusinessException("No Insurance with id: " + id));
         calculateInsurance(insurance, insuranceDTO);
         return insuranceRepository.save(insurance);
     }

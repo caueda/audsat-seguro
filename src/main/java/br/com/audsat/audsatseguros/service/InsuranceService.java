@@ -13,4 +13,6 @@ public interface InsuranceService {
     void deleteById(Long id);
 
     Optional<Insurance> findById(Long id);
+
+    public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO);
 }
