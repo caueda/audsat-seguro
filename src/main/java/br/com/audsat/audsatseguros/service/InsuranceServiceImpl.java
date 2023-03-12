@@ -6,13 +6,16 @@ import br.com.audsat.audsatseguros.exception.InsuranceBusinessException;
 import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
 import br.com.audsat.audsatseguros.repository.CarService;
 import br.com.audsat.audsatseguros.repository.InsuranceRepository;
+import br.com.audsat.audsatseguros.service.jms.InsuranceSenderService;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class InsuranceServiceImpl implements InsuranceService {
 
     private InsuranceRepository insuranceRepository;
@@ -29,13 +32,15 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     private CarService carService;
 
+    private InsuranceSenderService insuranceSenderService;
+
     public InsuranceServiceImpl(InsuranceRepository insuranceRepository,
                                 DriverService driverService,
                                 CarDriverService carDriverService,
                                 ClaimService claimService,
                                 CustomerService customerService,
                                 InsuranceParamsService insuranceParamsService,
-                                CarService carService) {
+                                CarService carService, InsuranceSenderService insuranceSenderService) {
         this.insuranceRepository = insuranceRepository;
         this.driverService = driverService;
         this.carDriverService = carDriverService;
@@ -43,6 +48,7 @@ public class InsuranceServiceImpl implements InsuranceService {
         this.customerService = customerService;
         this.insuranceParamsService = insuranceParamsService;
         this.carService = carService;
+        this.insuranceSenderService = insuranceSenderService;
     }
 
     public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
@@ -96,7 +102,9 @@ public class InsuranceServiceImpl implements InsuranceService {
                 .builder()
                 .build(), insuranceDTO);
 
-        return insuranceRepository.save(insurance);
+        var createdInsurance = insuranceRepository.save(insurance);
+        insuranceSenderService.sendMessage(createdInsurance);
+        return createdInsurance;
     }
 
     @Override
@@ -104,7 +112,10 @@ public class InsuranceServiceImpl implements InsuranceService {
         var insurance = insuranceRepository.findById(id)
                 .orElseThrow(() -> new InsuranceBusinessException("No Insurance with id: " + id));
         calculateInsurance(insurance, insuranceDTO);
-        return insuranceRepository.save(insurance);
+        log.info("Updating insurance id: {}", id);
+        var updatedInsurance = insuranceRepository.save(insurance);
+        insuranceSenderService.sendMessage(updatedInsurance);
+        return updatedInsurance;
     }
 
     @Override

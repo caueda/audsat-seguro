@@ -6,6 +6,7 @@ import br.com.audsat.audsatseguros.exception.InsuranceBusinessException;
 import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
 import br.com.audsat.audsatseguros.repository.CarService;
 import br.com.audsat.audsatseguros.repository.InsuranceRepository;
+import br.com.audsat.audsatseguros.service.jms.InsuranceSenderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,9 @@ class InsuranceServiceImplTest {
     @Mock
     private CarService carService;
 
+    @Mock
+    private InsuranceSenderService insuranceSenderService;
+
     private InsuranceService insuranceService;
 
     @BeforeEach
@@ -53,7 +57,7 @@ class InsuranceServiceImplTest {
                 claimService,
                 customerService,
                 insuranceParamsService,
-                carService);
+                carService, insuranceSenderService);
     }
 
     public InsuranceParams mockInsuranceParams() {
