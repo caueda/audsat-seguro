@@ -31,7 +31,7 @@ Após a imagem ter sido criada com sucesso, executar:
 docker run -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 audsat-api:latest
 
 Simples teste:
-http://localhost:8080/insurance/budget/100
+curl http://localhost:8080/insurance/budget/100
 
 ### Dicionário de Dados
 Acessar a wiki deste repositório
