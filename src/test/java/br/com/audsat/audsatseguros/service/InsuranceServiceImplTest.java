@@ -23,7 +23,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -234,7 +233,12 @@ class InsuranceServiceImplTest {
         when(driverService.getDriverAgeOnBaseDate(isA(Driver.class), isA(LocalDate.class))).thenReturn(25L);
         when(claimService.findClaimByCarId(anyLong())).thenReturn(Collections.EMPTY_LIST);
         when(claimService.findClaimByDriverId(anyLong())).thenReturn(mockClaims());
-        insuranceService.save(insuranceDTO);
+
+        when(insuranceRepository.save(isA(Insurance.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var savedInsurance = insuranceService.save(insuranceDTO);
+
+        assertThat(savedInsurance.getInsuranceStatus(), equalTo(InsuranceStatus.CREATED));
 
         Mockito.verify(insuranceRepository).save(isA(Insurance.class));
     }
@@ -273,7 +277,11 @@ class InsuranceServiceImplTest {
                 .car(mockCar())
                 .active(true)
                 .build()));
-        insuranceService.update(1L, insuranceDTO);
+        when(insuranceRepository.save(isA(Insurance.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var updatedInsurance = insuranceService.update(1L, insuranceDTO);
+
+        assertThat(updatedInsurance.getInsuranceStatus(), equalTo(InsuranceStatus.UPDATED));
 
         Mockito.verify(insuranceRepository).save(isA(Insurance.class));
     }

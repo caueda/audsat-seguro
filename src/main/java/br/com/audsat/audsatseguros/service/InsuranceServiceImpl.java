@@ -1,6 +1,7 @@
 package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Insurance;
+import br.com.audsat.audsatseguros.domain.InsuranceStatus;
 import br.com.audsat.audsatseguros.dto.InsuranceDTO;
 import br.com.audsat.audsatseguros.exception.InsuranceBusinessException;
 import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
@@ -100,9 +101,11 @@ public class InsuranceServiceImpl implements InsuranceService {
 
         var insurance = calculateInsurance(Insurance
                 .builder()
+                .insuranceStatus(InsuranceStatus.CREATED)
                 .build(), insuranceDTO);
 
         var createdInsurance = insuranceRepository.save(insurance);
+
         insuranceSenderService.sendMessage(createdInsurance);
         return createdInsurance;
     }
@@ -111,6 +114,7 @@ public class InsuranceServiceImpl implements InsuranceService {
     public Insurance update(Long id, InsuranceDTO insuranceDTO) {
         var insurance = insuranceRepository.findById(id)
                 .orElseThrow(() -> new InsuranceBusinessException("No Insurance with id: " + id));
+        insurance.setInsuranceStatus(InsuranceStatus.UPDATED);
         calculateInsurance(insurance, insuranceDTO);
         log.info("Updating insurance id: {}", id);
         var updatedInsurance = insuranceRepository.save(insurance);

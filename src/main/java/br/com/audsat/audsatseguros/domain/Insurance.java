@@ -46,6 +46,10 @@ public class Insurance implements Serializable {
     @Column(name="is_active")
     private boolean active;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="INSURANCE_STATUS")
+    private InsuranceStatus insuranceStatus;
+
     @PrePersist
     protected void onCreate() {
         this.creationDate = LocalDateTime.now();
