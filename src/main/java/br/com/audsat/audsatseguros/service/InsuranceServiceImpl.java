@@ -8,6 +8,7 @@ import br.com.audsat.audsatseguros.exception.InsuranceParamsNotFoundException;
 import br.com.audsat.audsatseguros.repository.CarService;
 import br.com.audsat.audsatseguros.repository.InsuranceRepository;
 import br.com.audsat.audsatseguros.service.jms.InsuranceSenderService;
+import jakarta.jms.JMSException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -118,7 +119,11 @@ public class InsuranceServiceImpl implements InsuranceService {
         calculateInsurance(insurance, insuranceDTO);
         log.info("Updating insurance id: {}", id);
         var updatedInsurance = insuranceRepository.save(insurance);
-        insuranceSenderService.sendMessage(updatedInsurance);
+        try {
+            insuranceSenderService.sendAndReceiveMessage(updatedInsurance);
+        } catch (JMSException e) {
+            throw new InsuranceBusinessException(e.getMessage());
+        }
         return updatedInsurance;
     }
 

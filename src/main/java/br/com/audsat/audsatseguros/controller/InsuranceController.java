@@ -3,6 +3,7 @@ package br.com.audsat.audsatseguros.controller;
 import br.com.audsat.audsatseguros.domain.Insurance;
 import br.com.audsat.audsatseguros.dto.InsuranceDTO;
 import br.com.audsat.audsatseguros.service.InsuranceService;
+import jakarta.jms.JMSException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,7 @@ public class InsuranceController {
     }
 
     @PutMapping("/{insuranceId}")
-    public ResponseEntity<Insurance> saveInsurance(@PathVariable Long insuranceId, @RequestBody @Valid InsuranceDTO insuranceRequest) {
+    public ResponseEntity<Insurance> saveInsurance(@PathVariable Long insuranceId, @RequestBody @Valid InsuranceDTO insuranceRequest) throws JMSException {
         var savedInsurance = insuranceService.update(insuranceId, insuranceRequest);
         return ResponseEntity.ok(savedInsurance);
     }

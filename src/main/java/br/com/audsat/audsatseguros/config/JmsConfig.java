@@ -13,6 +13,8 @@ import org.springframework.jms.support.converter.MessageType;
 public class JmsConfig {
 
     public static  final String MY_QUEUE = "insurance-queue";
+    public static final String MY_SEND_RECEIVE_QUEUE = "insurance-send-receive";
+
     @Bean
     public MessageConverter messageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();

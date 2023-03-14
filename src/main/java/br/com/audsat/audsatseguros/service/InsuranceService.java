@@ -2,13 +2,14 @@ package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Insurance;
 import br.com.audsat.audsatseguros.dto.InsuranceDTO;
+import jakarta.jms.JMSException;
 
 import java.util.Optional;
 
 public interface InsuranceService {
     Insurance save(InsuranceDTO insuranceDTO);
 
-    Insurance update(Long id, InsuranceDTO insuranceDTO);
+    Insurance update(Long id, InsuranceDTO insuranceDTO) throws JMSException;
 
     void deleteById(Long id);
 
