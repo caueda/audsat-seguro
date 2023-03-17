@@ -2,18 +2,16 @@ package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.Customer;
 import br.com.audsat.audsatseguros.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    private CustomerRepository customerRepository;
-
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private final CustomerRepository customerRepository;
 
     @Override
     public Optional<Customer> findById(Long id) {

@@ -2,20 +2,17 @@ package br.com.audsat.audsatseguros.service;
 
 import br.com.audsat.audsatseguros.domain.CarDriver;
 import br.com.audsat.audsatseguros.repository.CarDriverRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CarDriverServiceImpl implements CarDriverService {
 
-    private CarDriverRepository carDriverRepository;
-
-    public CarDriverServiceImpl(CarDriverRepository carDriverRepository) {
-        this.carDriverRepository = carDriverRepository;
-    }
+    private final CarDriverRepository carDriverRepository;
 
     @Override
     public Optional<CarDriver> findMainDriver(Long carId) {

@@ -10,48 +10,33 @@ import br.com.audsat.audsatseguros.repository.InsuranceRepository;
 import br.com.audsat.audsatseguros.service.jms.InsuranceSenderService;
 import jakarta.jms.JMSException;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class InsuranceServiceImpl implements InsuranceService {
 
-    private InsuranceRepository insuranceRepository;
+    private final InsuranceRepository insuranceRepository;
 
-    private DriverService driverService;
+    private final DriverService driverService;
 
-    private CarDriverService carDriverService;
+    private final CarDriverService carDriverService;
 
-    private ClaimService claimService;
+    private final ClaimService claimService;
 
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
-    private InsuranceParamsService insuranceParamsService;
+    private final InsuranceParamsService insuranceParamsService;
 
-    private CarService carService;
+    private final CarService carService;
 
-    private InsuranceSenderService insuranceSenderService;
-
-    public InsuranceServiceImpl(InsuranceRepository insuranceRepository,
-                                DriverService driverService,
-                                CarDriverService carDriverService,
-                                ClaimService claimService,
-                                CustomerService customerService,
-                                InsuranceParamsService insuranceParamsService,
-                                CarService carService, InsuranceSenderService insuranceSenderService) {
-        this.insuranceRepository = insuranceRepository;
-        this.driverService = driverService;
-        this.carDriverService = carDriverService;
-        this.claimService = claimService;
-        this.customerService = customerService;
-        this.insuranceParamsService = insuranceParamsService;
-        this.carService = carService;
-        this.insuranceSenderService = insuranceSenderService;
-    }
+    private final InsuranceSenderService insuranceSenderService;
 
     public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
         var insuranceParams = insuranceParamsService
