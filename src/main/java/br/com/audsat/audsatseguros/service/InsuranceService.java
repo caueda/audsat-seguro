@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface InsuranceService {
     Insurance save(InsuranceDTO insuranceDTO);
 
-    Insurance update(Long id, InsuranceDTO insuranceDTO) throws JMSException;
+    Insurance update(Long id, InsuranceDTO insuranceDTO);
 
     void deleteById(Long id);
 
