@@ -17,7 +17,7 @@ User Name: sa
 Password: password
 
 ### Open API Documentation
-http://localhost:8080/audsat-api/swagger-ui/index.html
+http://localhost:8080/audsat-api/swagger-ui/index.html  [![CircleCI](https://dl.circleci.com/status-badge/img/gh/caueda/audsat-seguro/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/caueda/audsat-seguro/tree/main)
 
 ### Docker
 É possível criar uma imagem para o Docker

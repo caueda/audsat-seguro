@@ -53,5 +53,6 @@ public class InsuranceController {
     public ResponseEntity<Insurance> saveInsurance(@PathVariable Long insuranceId, @RequestBody @Valid InsuranceDTO insuranceRequest) throws JMSException {
         var savedInsurance = insuranceService.update(insuranceId, insuranceRequest);
         return ResponseEntity.ok(savedInsurance);
+
     }
 }
