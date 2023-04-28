@@ -8,7 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -22,6 +27,9 @@ class ServiceTestIT {
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Autowired
     private CarDriverService carDriverService;
@@ -92,5 +100,14 @@ class ServiceTestIT {
         assertNotNull(savedInsurance.getId());
         assertThat(0.06, equalTo(savedInsurance.getQuote()));
         assertThat(4800.0, equalTo(savedInsurance.getInsuranceValue()));
+    }
+
+    @Test
+    void testPathMatchingResourcePatternResolver() throws IOException {
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(resourceLoader);
+        Resource[] resources = resolver.getResources("classpath*:data.sql");
+        for (Resource resource: resources) {
+            System.out.println(resource);
+        }
     }
 }
