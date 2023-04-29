@@ -14,5 +14,5 @@ public interface InsuranceService {
 
     Optional<Insurance> findById(Long id);
 
-    public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO);
+    public Insurance recalculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO);
 }

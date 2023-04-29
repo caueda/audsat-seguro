@@ -38,7 +38,14 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     private final InsuranceSenderService insuranceSenderService;
 
-    public Insurance calculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
+    public Insurance calculateInsurance(InsuranceDTO insuranceDTO) {
+        return recalculateInsurance(Insurance
+                .builder()
+                .insuranceStatus(InsuranceStatus.CREATED)
+                .build(), insuranceDTO);
+    }
+
+    public Insurance recalculateInsurance(final Insurance insurance, InsuranceDTO insuranceDTO) {
         var insuranceParams = insuranceParamsService
                 .findByStatusActive()
                 .orElseThrow(() -> new InsuranceParamsNotFoundException("No Insurance Params found"));
@@ -85,10 +92,7 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Override
     public Insurance save(@NotNull InsuranceDTO insuranceDTO) {
 
-        var insurance = calculateInsurance(Insurance
-                .builder()
-                .insuranceStatus(InsuranceStatus.CREATED)
-                .build(), insuranceDTO);
+        var insurance = calculateInsurance(insuranceDTO);
 
         var createdInsurance = insuranceRepository.save(insurance);
 
@@ -101,7 +105,7 @@ public class InsuranceServiceImpl implements InsuranceService {
         var insurance = insuranceRepository.findById(id)
                 .orElseThrow(() -> new InsuranceBusinessException("No Insurance with id: " + id));
         insurance.setInsuranceStatus(InsuranceStatus.UPDATED);
-        calculateInsurance(insurance, insuranceDTO);
+        recalculateInsurance(insurance, insuranceDTO);
         log.info("Updating insurance id: {}", id);
         var updatedInsurance = insuranceRepository.save(insurance);
         try {

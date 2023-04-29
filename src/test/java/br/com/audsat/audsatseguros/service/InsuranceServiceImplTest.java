@@ -126,7 +126,7 @@ class InsuranceServiceImplTest {
     void calculateInsurance_When_No_InsuranceParams_Found() {
         when(insuranceParamsService.findByStatusActive()).thenReturn(Optional.empty());
         var exception = assertThrows(InsuranceParamsNotFoundException.class,
-                ()-> insuranceService.calculateInsurance(new Insurance(), new InsuranceDTO()));
+                ()-> insuranceService.recalculateInsurance(new Insurance(), new InsuranceDTO()));
         assertThat(exception.getMessage(), equalTo("No Insurance Params found"));
     }
 
@@ -135,7 +135,7 @@ class InsuranceServiceImplTest {
         when(insuranceParamsService.findByStatusActive()).thenReturn(Optional.of(new InsuranceParams()));
         when(customerService.findById(anyLong())).thenReturn(Optional.empty());
         var exception = assertThrows(InsuranceBusinessException.class,
-                ()-> insuranceService.calculateInsurance(new Insurance(), InsuranceDTO
+                ()-> insuranceService.recalculateInsurance(new Insurance(), InsuranceDTO
                         .builder()
                         .customerId(1L)
                         .build()));
@@ -148,7 +148,7 @@ class InsuranceServiceImplTest {
         when(customerService.findById(anyLong())).thenReturn(Optional.of(new Customer()));
         when(carService.findById(anyLong())).thenReturn(Optional.empty());
         var exception = assertThrows(InsuranceBusinessException.class,
-                ()-> insuranceService.calculateInsurance(new Insurance(), InsuranceDTO
+                ()-> insuranceService.recalculateInsurance(new Insurance(), InsuranceDTO
                         .builder()
                         .customerId(1L)
                         .carId(1L)
@@ -172,7 +172,7 @@ class InsuranceServiceImplTest {
         when(claimService.findClaimByCarId(anyLong())).thenReturn(mockClaims());
         when(claimService.findClaimByDriverId(anyLong())).thenReturn(mockClaims());
 
-        insuranceService.calculateInsurance(insurance, insuranceDTO);
+        insuranceService.recalculateInsurance(insurance, insuranceDTO);
         assertThat(insurance.getQuote(), equalTo(0.06 + 0.02 + 0.02 + 0.02));
         assertThat(insurance.getInsuranceValue(), equalTo((0.06 + 0.02 + 0.02 + 0.02) * mockCar().getFipeValue() ));
     }
@@ -193,7 +193,7 @@ class InsuranceServiceImplTest {
         when(claimService.findClaimByCarId(anyLong())).thenReturn(Collections.EMPTY_LIST);
         when(claimService.findClaimByDriverId(anyLong())).thenReturn(Collections.EMPTY_LIST);
 
-        insuranceService.calculateInsurance(insurance, insuranceDTO);
+        insuranceService.recalculateInsurance(insurance, insuranceDTO);
         assertThat(insurance.getQuote(), equalTo(0.06 ));
         assertThat(insurance.getInsuranceValue(), equalTo(0.06  * mockCar().getFipeValue() ));
     }
@@ -214,7 +214,7 @@ class InsuranceServiceImplTest {
         when(claimService.findClaimByCarId(anyLong())).thenReturn(Collections.EMPTY_LIST);
         when(claimService.findClaimByDriverId(anyLong())).thenReturn(mockClaims());
 
-        insuranceService.calculateInsurance(insurance, insuranceDTO);
+        insuranceService.recalculateInsurance(insurance, insuranceDTO);
         assertThat(insurance.getQuote(), equalTo(0.06 + 0.02 + 0.02 ));
         assertThat(insurance.getInsuranceValue(), equalTo((0.06 + 0.02 + 0.02)  * mockCar().getFipeValue() ));
     }
